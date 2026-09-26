@@ -1,0 +1,56 @@
+{
+  "name": "desktop-folder-grid",
+  "productName": "桌面文件夹格子",
+  "version": "1.0.0",
+  "description": "专为 Windows 打造的轻量仿手机/平板桌面文件夹小组件（类似 iOS / HarmonyOS 文件夹空间体验）",
+  "main": "main.js",
+  "author": "meiyu",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/desktop-folder-grid.git"
+  },
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --win --dir",
+    "dist": "electron-builder --win --dir",
+    "dist:portable": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "com.desktop.foldergrid",
+    "productName": "桌面文件夹格子",
+    "copyright": "Copyright © 2026",
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*",
+      "ExtractIcon.exe"
+    ],
+    "extraResources": [
+      "ExtractIcon.exe"
+    ],
+    "asarUnpack": [
+      "ExtractIcon.exe"
+    ],
+    "asar": true
+  },
+  "devDependencies": {
+    "electron": "^42.3.3",
+    "electron-builder": "^26.0.12"
+  }
+}

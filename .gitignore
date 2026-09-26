@@ -1,0 +1,39 @@
+# Node dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build and release outputs
+dist/
+release/
+build/
+out/
+打包输出/
+
+# Log files
+*.log
+startup.log
+crash_out.log
+crash_err.log
+
+# Temporary test & debug files
+take_screenshot_cmd.json
+test_icon.txt
+screenshots/
+
+# OS temporary files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Editor directories
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

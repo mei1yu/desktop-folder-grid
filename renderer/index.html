@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>桌面文件夹格子</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" class="app-root expanded">
+
+    <!-- 1. Collapsed Desktop Widget (4 Styles: Glass Capsule, Dynamic Island, Edge Bar, Classic Zipper) -->
+    <div id="zipperHandle" class="zipper-handle style-glass" title="点击展开桌面空间 (按住可拖动位置)">
+      <div class="zipper-grip" id="zipperDragGrip" title="按住拖动位置">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="9" cy="7" r="1.8"/>
+          <circle cx="15" cy="7" r="1.8"/>
+          <circle cx="9" cy="12" r="1.8"/>
+          <circle cx="15" cy="12" r="1.8"/>
+          <circle cx="9" cy="17" r="1.8"/>
+          <circle cx="15" cy="17" r="1.8"/>
+        </svg>
+      </div>
+
+      <div class="zipper-body" id="zipperTriggerBtn">
+        <!-- Style 1: 极简灰白透光胶囊 (Glass Capsule) -->
+        <div class="capsule-content glass-view">
+          <div class="glass-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="14" height="14">
+              <rect x="3" y="3" width="7" height="7" rx="2"/>
+              <rect x="14" y="3" width="7" height="7" rx="2"/>
+              <rect x="3" y="14" width="7" height="7" rx="2"/>
+              <rect x="14" y="14" width="7" height="7" rx="2"/>
+            </svg>
+          </div>
+          <span class="capsule-title">空间</span>
+          <span class="capsule-badge" id="capsuleBadgeGlass">1</span>
+          <svg class="capsule-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+
+        <!-- Style 2: 灵动岛微胶囊 (Dynamic Island) -->
+        <div class="capsule-content island-view">
+          <span class="island-dot"></span>
+          <span class="capsule-title">空间</span>
+          <span class="island-badge" id="capsuleBadgeIsland">1</span>
+          <svg class="capsule-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+
+        <!-- Style 3: 屏幕顶端极隐拉条 (Edge Slide Bar) -->
+        <div class="capsule-content edge-view">
+          <div class="edge-notch"></div>
+          <span class="edge-label">空间</span>
+          <span class="edge-badge" id="capsuleBadgeEdge">1</span>
+        </div>
+
+        <!-- Style 4: 经典复古拉链滑块 (Classic Zipper - 用户原版截图) -->
+        <div class="capsule-content zipper-view">
+          <div class="zipper-center-pill">
+            <svg class="zipper-svg-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+            </svg>
+            <span class="zipper-label">空间</span>
+            <span class="zipper-badge" id="zipperCount">1空间</span>
+          </div>
+          <div class="zipper-pull-circle" title="展开空间画布">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="13" height="13">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. The Curtain Canvas (拉帘展开的大画布) -->
+    <div id="curtainCanvas" class="curtain-canvas">
+      
+      <!-- Top Curtain Bar -->
+      <header class="canvas-header" id="canvasHeader">
+        <!-- Retract zipper button (拉上帘子 / 收起) -->
+        <button class="zipper-retract-btn" id="btnRetractZipper" title="拉上帘子，收起为桌面拉链 ⬆️">
+          <div class="retract-zipper-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+              <path d="M18 15l-6-6-6 6"/>
+            </svg>
+          </div>
+          <span>收起帘子</span>
+        </button>
+
+        <!-- Canvas Drag & Title Zone -->
+        <div class="canvas-drag-zone" id="dragZone" title="按住此处可自由拖动窗口位置">
+          <span class="canvas-title" id="canvasTitle" title="双击重命名画布">桌面空间画布</span>
+          <button class="canvas-title-edit-btn" id="btnEditCanvasTitle" title="重命名画布">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+          <div class="drag-grip-indicator" id="dragIndicatorBadge" title="按住此处可任意拖拽移动窗口位置">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12">
+              <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+              <circle cx="16" cy="8" r="1.5" fill="currentColor"/>
+              <circle cx="8" cy="12" r="1.5" fill="currentColor"/>
+              <circle cx="16" cy="12" r="1.5" fill="currentColor"/>
+              <circle cx="8" cy="16" r="1.5" fill="currentColor"/>
+              <circle cx="16" cy="16" r="1.5" fill="currentColor"/>
+            </svg>
+            <span>按住拖动</span>
+          </div>
+        </div>
+
+        <!-- Folder Size Selector (调节文件夹大小，自动重新排版) -->
+        <div class="folder-size-controller">
+          <span class="size-label">尺寸:</span>
+          <div class="size-toggle-group">
+            <button class="size-btn" data-size="small" title="紧凑小格子 (自适应容纳更多)">小</button>
+            <button class="size-btn active" data-size="medium" title="标准中格子">中</button>
+            <button class="size-btn" data-size="large" title="大格子 (大图标展示)">大</button>
+          </div>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="canvas-actions">
+          <button class="action-btn-primary" id="btnAddNewFolder" title="新建文件夹空间">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            <span>加空间</span>
+          </button>
+
+          <button class="icon-btn" id="btnTheme" title="切换主题配色 / 壁纸自适应">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.1-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9z"/>
+              <circle cx="6.5" cy="11.5" r="1.5" fill="currentColor"/>
+              <circle cx="9.5" cy="7.5" r="1.5" fill="currentColor"/>
+              <circle cx="14.5" cy="7.5" r="1.5" fill="currentColor"/>
+              <circle cx="17.5" cy="11.5" r="1.5" fill="currentColor"/>
+            </svg>
+          </button>
+
+          <button class="icon-btn" id="btnTop" title="置顶悬浮模式">
+            <svg id="topIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 19V5M5 12l7-7 7 7"/>
+            </svg>
+          </button>
+
+          <button class="icon-btn" id="btnLock" title="锁定/解锁画布拖动">
+            <svg id="lockIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </button>
+
+          <button class="icon-btn" id="btnSettings" title="个性化设置">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
+
+          <button class="icon-btn" id="btnMinimize" title="隐藏到托盘">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Tip bar -->
+      <div class="canvas-tip-bar">
+        <span>💡 拖拽桌面应用至空间收纳 | 调整尺寸自动重新排版 | 按住顶部「按住拖动」可移动窗口</span>
+      </div>
+
+      <!-- Quick Theme & Style Switcher Floating Bar -->
+      <div id="themePopover" class="theme-popover">
+        <div class="theme-popover-content">
+          <div class="popover-row">
+            <span class="theme-popover-title">形态:</span>
+            <div class="style-pills-row" id="stylePillsRow">
+              <button class="style-pill active" data-style="glass" title="极简灰白透光胶囊 (推荐)">
+                <span>💎 灰白胶囊</span>
+              </button>
+              <button class="style-pill" data-style="island" title="深空高透灵动岛">
+                <span>🌌 灵动岛</span>
+              </button>
+              <button class="style-pill" data-style="edge" title="屏幕顶端极隐拉条">
+                <span>🪟 极隐拉条</span>
+              </button>
+              <button class="style-pill" data-style="zipper" title="经典复古拉条滑块 (原版截图)">
+                <span>🧲 复古拉条</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="popover-row">
+            <span class="theme-popover-title">色彩:</span>
+            <div class="theme-pills-row" id="themePillsRow">
+              <button class="theme-pill active" data-theme="white" title="极简灰白透光磨砂 (默认)">
+                <span class="theme-dot dot-white"></span>
+                <span>灰白透光</span>
+              </button>
+              <button class="theme-pill" data-theme="wallpaper" title="智能识别当前桌面壁纸颜色">
+                <span class="theme-dot dot-wp"></span>
+                <span>壁纸自适应</span>
+              </button>
+              <button class="theme-pill" data-theme="pink" title="粉嫩温润樱花色">
+                <span class="theme-dot dot-pink"></span>
+                <span>樱花粉</span>
+              </button>
+              <button class="theme-pill" data-theme="blue" title="清透晶莹冰川蓝">
+                <span class="theme-dot dot-blue"></span>
+                <span>冰川蓝</span>
+              </button>
+              <button class="theme-pill" data-theme="green" title="清新宁静薄荷青">
+                <span class="theme-dot dot-green"></span>
+                <span>薄荷绿</span>
+              </button>
+              <button class="theme-pill" data-theme="purple" title="神秘梦幻暗夜紫">
+                <span class="theme-dot dot-purple"></span>
+                <span>极光紫</span>
+              </button>
+              <button class="theme-pill" data-theme="orange" title="活力温暖夕阳橙">
+                <span class="theme-dot dot-orange"></span>
+                <span>暖阳橙</span>
+              </button>
+              <button class="theme-pill" data-theme="dark" title="极客质感暗黑磨砂玻璃">
+                <span class="theme-dot dot-dark"></span>
+                <span>曜石黑</span>
+              </button>
+            </div>
+            <button class="theme-refresh-wp-btn" id="btnRefreshWallpaper" title="重新扫描当前桌面壁纸色彩">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+              </svg>
+              <span>重测壁纸</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Auto-Layout Canvas Grid Body -->
+      <main class="canvas-grid-body" id="gridContainer">
+        <!-- Folders and single apps will reflow here dynamically -->
+      </main>
+
+    </div>
+
+    <!-- Floating Toast Notification -->
+    <div id="toastNotification" class="toast-notification"></div>
+
+    <!-- Drop indicator between items -->
+    <div id="dropIndicator" class="drop-indicator"></div>
+
+    <!-- Dragging Clone element follows cursor -->
+    <div id="dragGhost" class="drag-ghost"></div>
+
+    <!-- Expanded "Folder Space" (文件空间) Modal -->
+    <div id="folderModal" class="folder-modal-overlay">
+      <div class="folder-space-card" id="folderSpaceCard">
+        <div class="folder-space-header">
+          <div class="folder-title-wrapper">
+            <h2 id="folderSpaceTitle" class="folder-space-title" contenteditable="false">文件夹</h2>
+            <button class="title-edit-btn" id="btnEditFolderTitle" title="重命名文件夹">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+
+            <!-- Folder Space Color Switcher -->
+            <div class="folder-color-picker" id="folderColorPicker" title="设置文件夹空间专属颜色">
+              <button class="folder-color-dot dot-blue active" data-color="blue" title="经典蓝"></button>
+              <button class="folder-color-dot dot-pink" data-color="pink" title="樱花粉"></button>
+              <button class="folder-color-dot dot-green" data-color="green" title="薄荷绿"></button>
+              <button class="folder-color-dot dot-purple" data-color="purple" title="极光紫"></button>
+              <button class="folder-color-dot dot-orange" data-color="orange" title="暖阳橙"></button>
+              <button class="folder-color-dot dot-red" data-color="red" title="玫瑰红"></button>
+              <button class="folder-color-dot dot-gray" data-color="gray" title="雅致灰"></button>
+            </div>
+          </div>
+          <div class="folder-space-actions">
+            <button class="icon-btn small-btn" id="btnAddAppToFolder" title="添加应用到此文件夹">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </button>
+            <button class="icon-btn small-btn close-btn" id="btnCloseFolderSpace" title="关闭文件空间 (ESC)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="folder-space-content" id="folderSpaceContent">
+          <!-- Full-size app items in this folder -->
+        </div>
+
+        <div class="folder-space-footer">
+          <button class="text-btn danger-btn" id="btnDisbandFolder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+            </svg>
+            解散为独立应用
+          </button>
+          <span class="folder-tip">提示：可直接从桌面拖拽应用到此文件夹</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add App Modal -->
+    <div id="addModal" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>添加应用与快捷方式</h3>
+          <button class="icon-btn small-btn" id="btnCloseAddModal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="action-block">
+            <button class="primary-btn full-width" id="btnPickLocalFile">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+              </svg>
+              浏览本地文件 / 快捷方式 (.exe, .lnk, 任意文件)
+            </button>
+            <div class="or-divider"><span>或手动输入</span></div>
+          </div>
+
+          <div class="form-group">
+            <label>应用/空间名称</label>
+            <input type="text" id="inputAppName" placeholder="例如：浏览器、微信、代码库" />
+          </div>
+
+          <div class="form-group">
+            <label>启动目标 (本地路径、系统命令或网址)</label>
+            <input type="text" id="inputAppAction" placeholder="例如：C:\app.exe 或 https://www.google.com" />
+          </div>
+
+          <div class="form-group">
+            <label>内置矢量图标选择</label>
+            <div class="preset-icons-grid" id="presetIconsGrid">
+              <!-- Preset icons populated dynamically -->
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="secondary-btn" id="btnCancelAdd">取消</button>
+          <button class="primary-btn" id="btnConfirmAdd">确认添加</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rename Modal (自定义轻量重命名弹窗) -->
+    <div id="renameModal" class="modal-overlay">
+      <div class="modal-card small-modal">
+        <div class="modal-header">
+          <h3 id="renameModalTitle">重命名空间</h3>
+          <button class="icon-btn small-btn" id="btnCloseRenameModal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label id="renameModalLabel">请输入新名称</label>
+            <input type="text" id="inputRenameName" placeholder="输入新名称..." maxlength="30" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="secondary-btn" id="btnCancelRename">取消</button>
+          <button class="primary-btn" id="btnConfirmRename">确认保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personalization Settings Modal -->
+    <div id="settingsModal" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>个性化设置</h3>
+          <button class="icon-btn small-btn" id="btnCloseSettingsModal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="setting-item full-col">
+            <div class="setting-label">
+              <span>✨ 桌面收起形态风格</span>
+              <small>自定义收起在桌面时的组件形态，随时切换风格</small>
+            </div>
+            <div class="widget-styles-grid" id="widgetStylesGrid">
+              <button class="style-choice-card active" data-style="glass">
+                <div class="style-preview preview-style-glass">
+                  <div class="mock-glass-pill">
+                    <span class="mock-dot"></span>
+                    <span class="mock-txt">空间</span>
+                  </div>
+                </div>
+                <span class="style-name">极简灰白胶囊</span>
+                <span class="style-tag">默认推荐</span>
+              </button>
+              <button class="style-choice-card" data-style="island">
+                <div class="style-preview preview-style-island">
+                  <div class="mock-island-pill">
+                    <span class="mock-green-dot"></span>
+                    <span class="mock-txt">空间</span>
+                  </div>
+                </div>
+                <span class="style-name">灵动岛微胶囊</span>
+                <span class="style-tag">深空暗黑</span>
+              </button>
+              <button class="style-choice-card" data-style="edge">
+                <div class="style-preview preview-style-edge">
+                  <div class="mock-edge-bar"></div>
+                </div>
+                <span class="style-name">边缘极隐拉条</span>
+                <span class="style-tag">贴边隐匿</span>
+              </button>
+              <button class="style-choice-card" data-style="zipper">
+                <div class="style-preview preview-style-zipper">
+                  <div class="mock-zipper-pill">
+                    <span class="mock-zip-pink"></span>
+                    <span class="mock-zip-blue"></span>
+                  </div>
+                </div>
+                <span class="style-name">复古拉条滑块</span>
+                <span class="style-tag">经典原版</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-item full-col">
+            <div class="setting-label">
+              <span>🌈 全局主题色彩</span>
+              <small id="themeStatusText">智能识别桌面壁纸主色，或选择专属磨砂玻璃色彩</small>
+            </div>
+            <div class="settings-theme-grid" id="settingsThemesGrid">
+              <button class="settings-theme-card active" data-theme="white">
+                <div class="theme-card-preview preview-white"></div>
+                <span>灰白透光</span>
+              </button>
+              <button class="settings-theme-card" data-theme="wallpaper">
+                <div class="theme-card-preview preview-wallpaper">
+                  <span class="preview-dot"></span>
+                </div>
+                <span>壁纸自适应</span>
+              </button>
+              <button class="settings-theme-card" data-theme="pink">
+                <div class="theme-card-preview preview-pink"></div>
+                <span>樱花粉</span>
+              </button>
+              <button class="settings-theme-card" data-theme="blue">
+                <div class="theme-card-preview preview-blue"></div>
+                <span>冰川蓝</span>
+              </button>
+              <button class="settings-theme-card" data-theme="green">
+                <div class="theme-card-preview preview-green"></div>
+                <span>薄荷绿</span>
+              </button>
+              <button class="settings-theme-card" data-theme="purple">
+                <div class="theme-card-preview preview-purple"></div>
+                <span>极光紫</span>
+              </button>
+              <button class="settings-theme-card" data-theme="orange">
+                <div class="theme-card-preview preview-orange"></div>
+                <span>暖阳橙</span>
+              </button>
+              <button class="settings-theme-card" data-theme="dark">
+                <div class="theme-card-preview preview-dark"></div>
+                <span>曜石黑</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <span>👻 自动隐身（鼠标靠近显形）</span>
+              <small>收起状态下平时高透隐身，鼠标靠近时自动显形，桌面零遮挡</small>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settingAutoHide" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <span>➖ 点击最小化 ➖ 行为</span>
+              <small>点击顶部 ➖ 号时的动作模式</small>
+            </div>
+            <select class="setting-select" id="selectMinimizeBehavior">
+              <option value="stealth" selected>进入隐身（鼠标靠近即现形，无需点托盘）</option>
+              <option value="tray">隐藏到系统托盘</option>
+            </select>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <span>🚀 开机自启动</span>
+              <small>电脑开机进入桌面时自动在后台启动，无需每次手动打开</small>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settingAutoStart" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <span>置顶悬浮显示</span>
+              <small>开启后窗口在最前端；关闭后只在桌面显示（不遮挡其他窗口）</small>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settingAlwaysOnTop">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <span>背景透明度</span>
+              <small id="opacityValue">90%</small>
+            </div>
+            <input type="range" id="settingOpacity" min="30" max="100" value="90" class="slider-input">
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <span>毛玻璃虚化强度</span>
+              <small id="blurValue">24px</small>
+            </div>
+            <input type="range" id="settingBlur" min="8" max="40" value="24" class="slider-input">
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <span>格子缩放尺寸</span>
+              <small id="scaleValue">100%</small>
+            </div>
+            <input type="range" id="settingScale" min="70" max="140" value="100" class="slider-input">
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <span>重置初始空间</span>
+              <small>恢复如初始的单文件夹形态（不会改动电脑桌面原文件）</small>
+            </div>
+            <button class="secondary-btn danger-text" id="btnResetData">恢复初始空间</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="primary-btn" id="btnSaveSettings">完成</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Right-Click Context Menu -->
+    <div id="contextMenu" class="context-menu"></div>
+
+  </div>
+
+  <script src="icons.js"></script>
+  <script src="defaultData.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
