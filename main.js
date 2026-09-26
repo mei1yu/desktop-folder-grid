@@ -63,6 +63,26 @@ function getWallpaperPaletteNative() {
 const DATA_FILE = path.join(app.getPath('userData'), 'desktop-folders-data.json');
 const SETTINGS_FILE = path.join(app.getPath('userData'), 'desktop-settings.json');
 
+function initDataFiles() {
+  try {
+    const userData = app.getPath('userData');
+    if (!fs.existsSync(userData)) fs.mkdirSync(userData, { recursive: true });
+    if (!fs.existsSync(DATA_FILE)) {
+      const devDataFile = path.join(app.getPath('appData'), 'desktop-folder-grid', 'desktop-folders-data.json');
+      if (fs.existsSync(devDataFile)) {
+        fs.copyFileSync(devDataFile, DATA_FILE);
+      }
+    }
+    if (!fs.existsSync(SETTINGS_FILE)) {
+      const devSettingsFile = path.join(app.getPath('appData'), 'desktop-folder-grid', 'desktop-settings.json');
+      if (fs.existsSync(devSettingsFile)) {
+        fs.copyFileSync(devSettingsFile, SETTINGS_FILE);
+      }
+    }
+  } catch (e) {}
+}
+initDataFiles();
+
 let logFile = path.join(__dirname, 'startup.log');
 try {
   logFile = path.join(app.getPath('userData'), 'desktop-app.log');
@@ -403,7 +423,7 @@ function createWindow() {
     setTimeout(async () => {
       try {
         const img = await mainWindow.webContents.capturePage();
-        const dir = path.join(__dirname, 'screenshots');
+        const dir = app.isPackaged ? path.join(app.getPath('userData'), 'screenshots') : path.join(__dirname, 'screenshots');
         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
         const targetPath = path.join(dir, 'real_widget_preview.png');
         fs.writeFileSync(targetPath, img.toPNG());
@@ -440,7 +460,7 @@ function createWindow() {
     }, 60);
   });
 
-  const cmdFile = path.join(__dirname, 'take_screenshot_cmd.json');
+  const cmdFile = app.isPackaged ? path.join(app.getPath('userData'), 'take_screenshot_cmd.json') : path.join(__dirname, 'take_screenshot_cmd.json');
   fs.watchFile(cmdFile, { interval: 300 }, async () => {
     try {
       if (!fs.existsSync(cmdFile)) return;
@@ -451,7 +471,7 @@ function createWindow() {
       }
       await new Promise(r => setTimeout(r, cmdData.waitMs || 500));
       const img = await mainWindow.webContents.capturePage();
-      const outDir = path.join(__dirname, 'screenshots');
+      const outDir = app.isPackaged ? path.join(app.getPath('userData'), 'screenshots') : path.join(__dirname, 'screenshots');
       if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
       const outPath = cmdData.outPath || path.join(outDir, `${cmdData.id}.png`);
       fs.writeFileSync(outPath, img.toPNG());
