@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell, dialog, Tray, Menu, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, dialog, Tray, Menu, screen, nativeImage } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { exec, spawn, execFile } = require('child_process');
@@ -63,7 +63,11 @@ function getWallpaperPaletteNative() {
 const DATA_FILE = path.join(app.getPath('userData'), 'desktop-folders-data.json');
 const SETTINGS_FILE = path.join(app.getPath('userData'), 'desktop-settings.json');
 
-const logFile = path.join(__dirname, 'startup.log');
+let logFile = path.join(__dirname, 'startup.log');
+try {
+  logFile = path.join(app.getPath('userData'), 'desktop-app.log');
+} catch (e) {}
+
 function log(...args) {
   try {
     const msg = `[${new Date().toISOString()}] ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')}\n`;
@@ -467,9 +471,31 @@ function createWindow() {
 }
 
 function createTray() {
-  const iconPath = path.join(__dirname, 'assets', 'icon-32.png');
-  tray = new Tray(iconPath);
-  tray.setToolTip('桌面文件夹格子 (Desktop Folder Grid)');
+  let trayImage = null;
+  try {
+    const icoPath = path.join(__dirname, 'assets', 'icon.ico');
+    const pngPath = path.join(__dirname, 'assets', 'icon-32.png');
+    if (fs.existsSync(icoPath)) {
+      trayImage = nativeImage.createFromPath(icoPath);
+    }
+    if (!trayImage || trayImage.isEmpty()) {
+      trayImage = nativeImage.createFromPath(pngPath);
+    }
+  } catch (e) {
+    log('Error loading tray icon:', e);
+  }
+
+  try {
+    tray = new Tray(trayImage || path.join(__dirname, 'assets', 'icon-32.png'));
+  } catch (err) {
+    log('Tray creation failed:', err);
+    try {
+      tray = new Tray(path.join(__dirname, 'assets', 'icon.png'));
+    } catch (e2) {}
+  }
+  if (tray) {
+    tray.setToolTip('桌面文件夹格子 (Desktop Folder Grid)');
+  }
 
   const toggleVisibility = () => {
     if (!mainWindow) return;
