@@ -468,12 +468,12 @@ body {
 
 /* Canvas Header Bar */
 .canvas-header {
-  height: 52px;
-  padding: 0 10px;
+  height: 50px;
+  padding: 0 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 5px;
   border-bottom: 1px solid rgba(226, 232, 240, 0.7);
   background: rgba(255, 255, 255, 0.45);
   flex-shrink: 0;
@@ -483,11 +483,11 @@ body {
 .zipper-retract-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   background: linear-gradient(135deg, rgba(241, 245, 249, 0.9), rgba(226, 232, 240, 0.9));
   border: 1px solid rgba(203, 213, 225, 0.8);
-  padding: 5px 11px;
-  border-radius: 16px;
+  padding: 4px 8px;
+  border-radius: 14px;
   font-size: 11px;
   font-weight: 600;
   color: #334155;
@@ -516,7 +516,7 @@ body {
 .canvas-drag-zone {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   cursor: grab;
   -webkit-app-region: drag;
   flex: 1;
@@ -524,13 +524,12 @@ body {
 }
 
 .canvas-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-primary);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   outline: none;
+  flex-shrink: 0;
 }
 
 .canvas-title[contenteditable="true"] {
@@ -562,8 +561,8 @@ body {
 .drag-grip-indicator {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
+  gap: 3px;
+  padding: 2px 7px;
   background: rgba(148, 163, 184, 0.15);
   border: 1px dashed rgba(148, 163, 184, 0.45);
   border-radius: 9999px;
@@ -576,7 +575,6 @@ body {
   white-space: nowrap;
   transition: all 0.18s ease;
   flex-shrink: 0;
-  margin-left: 2px;
 }
 
 .drag-grip-indicator:hover {
@@ -594,10 +592,10 @@ body {
 .folder-size-controller {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   background: rgba(241, 245, 249, 0.7);
-  padding: 3px 6px;
-  border-radius: 12px;
+  padding: 2px 5px;
+  border-radius: 10px;
   border: 1px solid rgba(226, 232, 240, 0.9);
   flex-shrink: 0;
   -webkit-app-region: no-drag;
@@ -620,8 +618,8 @@ body {
   font-size: 11px;
   font-weight: 600;
   color: #64748b;
-  padding: 2px 8px;
-  border-radius: 8px;
+  padding: 2px 6px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -641,7 +639,7 @@ body {
 .canvas-actions {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   flex-shrink: 0;
   -webkit-app-region: no-drag;
 }
