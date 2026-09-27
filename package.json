@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/desktop-folder-grid.git"
+    "url": "https://gitee.com/meiyu123321123321/desktop-folder-grid.git"
   },
   "scripts": {
     "start": "electron .",

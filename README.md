@@ -106,10 +106,10 @@
 ### 2. 克隆项目
 ```bash
 # GitHub
-git clone https://github.com/your-username/desktop-folder-grid.git
+git clone https://github.com/mei1yu/desktop-folder-grid.git
 
 # 或 Gitee
-git clone https://gitee.com/your-username/desktop-folder-grid.git
+git clone https://gitee.com/meiyu123321123321/desktop-folder-grid.git
 
 cd desktop-folder-grid
 ```

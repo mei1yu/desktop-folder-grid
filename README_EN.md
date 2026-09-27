@@ -82,7 +82,7 @@ It features **smooth curtain drop-down animation**, **intelligent horizontal sym
 
 ```bash
 # Clone repository
-git clone https://github.com/your-username/desktop-folder-grid.git
+git clone https://github.com/mei1yu/desktop-folder-grid.git
 cd desktop-folder-grid
 
 # Install dependencies
